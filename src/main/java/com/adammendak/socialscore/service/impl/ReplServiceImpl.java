@@ -51,6 +51,7 @@ public class ReplServiceImpl implements ReplService {
     }
 
     private CommandDTO parseInput(String nextLine) {
+        //todo refactor
         String[] split = nextLine.split(" ");
         return CommandDTO.builder()
                 .command(split[0])
