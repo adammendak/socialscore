@@ -1,6 +1,8 @@
 package com.adammendak.socialscore.dao.model;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -8,7 +10,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "URL")
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Url {
 
     @Id
