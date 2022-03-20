@@ -21,7 +21,7 @@ public class ExportServiceImpl implements ExportService {
 
     private final UrlRepository urlRepository;
 
-    String[] HEADERS = { "domain", "urls", "social_score"};
+    private final String[] HEADERS = { "domain", "urls", "social_score"};
 
     @Override
     public void export() {
@@ -34,10 +34,10 @@ public class ExportServiceImpl implements ExportService {
         }
     }
 
-    public String createCSVFile(List<DomainAggregatedUrls> urls) throws IOException {
+    private String createCSVFile(List<DomainAggregatedUrls> urls) throws IOException {
         String fileName = getFileName();
         FileWriter out = new FileWriter(fileName);
-        try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(HEADERS))) {
+        try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(HEADERS).withDelimiter(';'))) {
             for (DomainAggregatedUrls url: urls) {
                 printer.printRecord(url.getDomain(), url.getUrls(), url.getSocialScore());
             }

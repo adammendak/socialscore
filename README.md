@@ -3,8 +3,9 @@
 to run app type: <br>
 java -jar socialscore-1.0.jar
 
-Example flow from specification : 
-<br>
+Applicataion prints out supported commands at the beginning. <br>
+
+Example flow from specification : <br>
 ADD http://www.rte.ie/news/politics/2018/1004/1001034-cso/ 20 <br>
 ADD https://www.rte.ie/news/ulster/2018/1004/1000952-moanghan-mine/ 30 <br>
 
