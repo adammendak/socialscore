@@ -3,6 +3,7 @@ package com.adammendak.socialscore.service.impl;
 import com.adammendak.socialscore.dao.model.DomainAggregatedUrls;
 import com.adammendak.socialscore.dao.repository.UrlRepository;
 import com.adammendak.socialscore.service.ExportService;
+import com.adammendak.socialscore.util.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -31,17 +32,21 @@ public class ExportServiceImpl implements ExportService {
             log.error("EXPORT FAILED !");
             e.printStackTrace();
         }
-
     }
 
     public String createCSVFile(List<DomainAggregatedUrls> urls) throws IOException {
-        //todo create filename with date formatter
-        FileWriter out = new FileWriter("result.csv");
+        String fileName = getFileName();
+        FileWriter out = new FileWriter(fileName);
         try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(HEADERS))) {
-            for(DomainAggregatedUrls url: urls) {
+            for (DomainAggregatedUrls url: urls) {
                 printer.printRecord(url.getDomain(), url.getUrls(), url.getSocialScore());
             }
         }
-        return "result.csv";
+        return fileName;
     }
+
+    private String getFileName() {
+        return "result_" + DateTimeUtils.getCreatedDateTime() + ".csv";
+    }
+
 }

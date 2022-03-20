@@ -12,7 +12,7 @@ import java.util.List;
 public interface UrlRepository extends JpaRepository<Url, String> {
 
     @Query(value = " SELECT url.DOMAIN as domain, COUNT(url) as urls, SUM(url.SOCIAL_SCORE) as socialScore"
-            + " FROM URL url GROUP BY url.DOMAIN", nativeQuery = true)
+            + " FROM URL url GROUP BY url.DOMAIN ORDER BY socialScore DESC", nativeQuery = true)
     List<DomainAggregatedUrls> getAllAndAggregateByDomain();
 
 }

@@ -5,12 +5,15 @@ import com.adammendak.socialscore.service.ReplService;
 import com.adammendak.socialscore.service.UrlService;
 import com.adammendak.socialscore.service.dto.CommandDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReplServiceImpl implements ReplService {
 
     public static final String ADD = "ADD";
@@ -28,36 +31,41 @@ public class ReplServiceImpl implements ReplService {
     @Override
     public void run() {
         printInstructions();
-
-        while(isRunning) {
-            CommandDTO dto = parseInput(scanner.nextLine());
-            switch (dto.getCommand()) {
-                case ADD:
-                    urlService.addUrl(dto);
-                    break;
-                case REMOVE:
-                    urlService.removeUrl(dto.getUrl());
-                    break;
-                case EXPORT:
-                    exportService.export();
-                    break;
-                case TERMINATE:
-                    isRunning = false;
-                default:
-                    System.out.println("COMMAND NOT SUPPORTED !");
-            }
+        while (isRunning) {
+            parseInput(scanner.nextLine()).ifPresent(this::decideOnCommand);
         }
-
     }
 
-    private CommandDTO parseInput(String nextLine) {
-        //todo refactor
+    private void decideOnCommand(CommandDTO dto) {
+        switch (dto.getCommand()) {
+            case ADD:
+                urlService.addUrl(dto);
+                break;
+            case REMOVE:
+                urlService.removeUrl(dto.getUrl());
+                break;
+            case EXPORT:
+                exportService.export();
+                break;
+            case TERMINATE:
+                isRunning = false;
+            default:
+                log.error("COMMAND NOT SUPPORTED : {}", dto.getCommand());
+        }
+    }
+
+    private Optional<CommandDTO> parseInput(String nextLine) {
         String[] split = nextLine.split(" ");
-        return CommandDTO.builder()
-                .command(split[0])
-                .url(split.length == 3 ? split[1] : null)
-                .socialScore(split.length == 3 ? split[2] : null)
-                .build();
+        if (split.length > 0 || split.length < 4) {
+            return Optional.of(CommandDTO.builder()
+                    .command(split[0])
+                    .url(split.length > 1 && split.length <= 3 ? split[1] : null)
+                    .socialScore(split.length == 3 ? split[2] : null)
+                    .build());
+        } else {
+            log.error("Wrong input : {}", nextLine);
+            return Optional.empty();
+        }
     }
 
     private void printInstructions() {
