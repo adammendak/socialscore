@@ -2,6 +2,7 @@ package com.adammendak.socialscore.service.impl;
 
 import com.adammendak.socialscore.dao.model.DomainAggregatedUrls;
 import com.adammendak.socialscore.dao.repository.UrlRepository;
+import com.adammendak.socialscore.util.DateTimeUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,6 @@ class ExportServiceImplTest {
     private UrlRepository urlRepository;
 
     @Test
-    //test not stable, will work if there are no csv files created and then delete file created, can be refined in the future
     public void export_correct_done() throws IOException {
         //given
         List<DomainAggregatedUrls> mockedList = List.of(
@@ -49,7 +49,7 @@ class ExportServiceImplTest {
 
         //then
         File rootFolder = new File(new File("").getAbsolutePath());
-        File[] matchingFiles = rootFolder.listFiles((dir, name) -> name.endsWith(".csv"));
+        File[] matchingFiles = rootFolder.listFiles((dir, name) -> isCreatedWithin5Seconds(name));
         Reader in = new FileReader(matchingFiles[0].getName());
 
         getRecords(in).forEach(x -> {
@@ -61,6 +61,15 @@ class ExportServiceImplTest {
         });
 
         matchingFiles[0].delete();
+    }
+
+    private boolean isCreatedWithin5Seconds(String name) {
+        if(name.contains(".csv")) {
+            String[] parsed = name.split("_");
+            String time = parsed[2].replace(".csv", "");
+            return DateTimeUtils.checkIfCreatedTimeWithin5Seconds(time);
+        }
+        return false;
     }
 
     private CSVParser getRecords(Reader in) throws IOException {
