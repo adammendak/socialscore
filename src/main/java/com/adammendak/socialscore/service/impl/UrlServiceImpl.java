@@ -21,9 +21,11 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public void addUrl(CommandDTO dto) {
         try {
-            urlRepository.save(new Url(dto.getUrl(),
-                    getDomainFromUrl(dto.getUrl()),
-                    Integer.valueOf(dto.getSocialScore())));
+            urlRepository.save(Url.builder()
+                    .url(dto.getUrl())
+                    .domain(getDomainFromUrl(dto.getUrl()))
+                    .socialScore(Integer.parseInt(dto.getSocialScore()))
+                    .build());
             log.info("URL SAVED: {}", dto.getUrl());
         } catch (MalformedURLException e) {
             log.error("URL MALFORMED: {}", dto.getUrl());

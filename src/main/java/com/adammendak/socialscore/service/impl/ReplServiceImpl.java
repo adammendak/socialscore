@@ -49,6 +49,7 @@ public class ReplServiceImpl implements ReplService {
                 break;
             case TERMINATE:
                 isRunning = false;
+                break;
             default:
                 log.error("COMMAND NOT SUPPORTED : {}", dto.getCommand());
         }
@@ -56,10 +57,10 @@ public class ReplServiceImpl implements ReplService {
 
     private Optional<CommandDTO> parseInput(String nextLine) {
         String[] split = nextLine.split(" ");
-        if (split.length > 0 || split.length < 4) {
+        if (split.length < 4) {
             return Optional.of(CommandDTO.builder()
-                    .command(split[0])
-                    .url(split.length > 1 && split.length <= 3 ? split[1] : null)
+                    .command(split[0].toUpperCase())
+                    .url(split.length > 1 ? split[1] : null)
                     .socialScore(split.length == 3 ? split[2] : null)
                     .build());
         } else {
